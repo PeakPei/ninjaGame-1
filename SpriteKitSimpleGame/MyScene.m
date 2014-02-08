@@ -18,40 +18,28 @@
 
 static inline CGPoint addVector(CGPoint a, CGPoint b)
 {
-    return CGPointMake(
-                       a.x + b.x,
-                       a.y + b.y
-                       );
+    return CGPointMake(a.x + b.x,a.y + b.y);
 }
-
 static inline CGPoint subtractVector(CGPoint a, CGPoint b)
 {
-    return CGPointMake(
-                       a.x - b.x,
-                       a.y - b.y
-                       );
+    return CGPointMake(a.x - b.x,a.y - b.y);
 }
-
 static inline CGPoint vectorMultiply(CGPoint a, float b)
 {
-    return CGPointMake(
-                       a.x * b,
-                       a.y * b
-                       );
+    //scale?
+    return CGPointMake(a.x * b,a.y * b);
 }
-
-static inline float rwLength(CGPoint a)
+static inline float magnitudeOfVector(CGPoint a)
 {
-    //magnitude of a vector
-    //sqrt(x^2 + y^2)
+    //magnitude of a vector = sqrt(x^2 + y^2)
     return sqrtf(a.x * a.x+ a.y * a.y);
 }
-
-// Makes a vector have a length of 1
-static inline CGPoint rwNormalize(CGPoint a)
+static inline CGPoint normalizeVector(CGPoint a)
 {
     //A vector with magnitude 1 is called a Unit Vector.
-    float length = rwLength(a);
+    // Makes a vector have a length of 1?
+    //Convert into a unit vector (of length 1)
+    float length = magnitudeOfVector(a);
     return CGPointMake(a.x / length, a.y / length);
 }
 @implementation MyScene
@@ -112,6 +100,35 @@ static inline CGPoint rwNormalize(CGPoint a)
     if (self.lastSpawnTimeInterval >1) {
         self.lastSpawnTimeInterval = 0;
         [self addMonster];
+    }
+}
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInNode:self];
+    
+
+    SKSpriteNode *projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
+    
+    //start at the player, so that you can calculate vector
+    projectile.position = self.player.position;
+    
+    CGPoint offset = subtractVector(location, projectile.position);
+    
+    if (offset.x > 0) {
+        [self addChild:projectile];
+        CGPoint direction = normalizeVector(offset);
+        //1000 because that should be enough time to travel of screen
+        CGPoint shootAmount = vectorMultiply(direction, 1000);
+        CGPoint finalDestination = addVector(shootAmount, projectile.position);
+        
+        float velocity = 480.0/1.0;
+        float finalDuration = self.size.width /velocity;
+        
+        SKAction *actionMove = [SKAction moveTo:finalDestination duration:finalDuration];
+        SKAction *actionMoveDone = [SKAction removeFromParent];
+        
+        [projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
     }
 }
 @end
