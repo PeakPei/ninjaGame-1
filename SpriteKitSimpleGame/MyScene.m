@@ -42,6 +42,10 @@ static inline CGPoint normalizeVector(CGPoint a)
     float length = magnitudeOfVector(a);
     return CGPointMake(a.x / length, a.y / length);
 }
+
+static const uint32_t projectileCategory     =  0x1 << 0;
+static const uint32_t monsterCategory        =  0x1 << 1;
+
 @implementation MyScene
 
 -(id)initWithSize:(CGSize)size
@@ -51,14 +55,24 @@ static inline CGPoint normalizeVector(CGPoint a)
         NSLog(@"Size: %@", NSStringFromCGSize(size));
         self.backgroundColor = [SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
         self.player = [SKSpriteNode spriteNodeWithImageNamed:@"player"];
-        self.player.position = CGPointMake(self.player.size.width/2, self.frame.size.height/2); //CGPointMake(100, 100);
+        self.player.position = CGPointMake(self.player.size.width/2, self.frame.size.height/2);
         [self addChild:self.player];
+        
+        self.physicsWorld.gravity = CGVectorMake(0, 0);
+        self.physicsWorld.contactDelegate = self;
     }
     return self;
 }
 -(void)addMonster
 {
     SKSpriteNode *monster = [SKSpriteNode spriteNodeWithImageNamed:@"monster"];
+    
+    //setup collision detection
+    monster.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:monster.size];
+    monster.physicsBody.dynamic = YES;
+    monster.physicsBody.categoryBitMask = monsterCategory;
+    monster.physicsBody.contactTestBitMask = projectileCategory;
+    monster.physicsBody.collisionBitMask = 0;
     
     int rangeMonsterCouldBeOnY = (self.frame.size.height - monster.size.height/2) - (monster.size.height/2);
     int actualY = (arc4random() % rangeMonsterCouldBeOnY);
@@ -106,16 +120,23 @@ static inline CGPoint normalizeVector(CGPoint a)
 {
     UITouch *touch = [touches anyObject];
     CGPoint location = [touch locationInNode:self];
-    
-
     SKSpriteNode *projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
+    
+    //setup collision detection
+    projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+    projectile.physicsBody.dynamic = YES;
+    projectile.physicsBody.categoryBitMask = projectileCategory;
+    projectile.physicsBody.collisionBitMask = monsterCategory;
+    projectile.physicsBody.contactTestBitMask = 0;
+    projectile.physicsBody.usesPreciseCollisionDetection = YES;
+    
     
     //start at the player, so that you can calculate vector
     projectile.position = self.player.position;
-    
     CGPoint offset = subtractVector(location, projectile.position);
     
-    if (offset.x > 0) {
+    if (offset.x > 0)
+    {
         [self addChild:projectile];
         CGPoint direction = normalizeVector(offset);
         //1000 because that should be enough time to travel of screen
