@@ -27,6 +27,7 @@
 		53F71CCA18A49DE200DC6258 /* background-music-aac.caf in Resources */ = {isa = PBXBuildFile; fileRef = 53F71CC718A49DE200DC6258 /* background-music-aac.caf */; };
 		53F71CCB18A49DE200DC6258 /* pew-pew-lei.caf in Resources */ = {isa = PBXBuildFile; fileRef = 53F71CC818A49DE200DC6258 /* pew-pew-lei.caf */; };
 		53F71CCC18A49DE200DC6258 /* sprites.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 53F71CC918A49DE200DC6258 /* sprites.atlas */; };
+		53F71CD018A70D5600DC6258 /* GameOverScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F71CCF18A70D5600DC6258 /* GameOverScene.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,8 @@
 		53F71CC718A49DE200DC6258 /* background-music-aac.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "background-music-aac.caf"; sourceTree = "<group>"; };
 		53F71CC818A49DE200DC6258 /* pew-pew-lei.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "pew-pew-lei.caf"; sourceTree = "<group>"; };
 		53F71CC918A49DE200DC6258 /* sprites.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = sprites.atlas; sourceTree = "<group>"; };
+		53F71CCE18A70D5600DC6258 /* GameOverScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameOverScene.h; sourceTree = "<group>"; };
+		53F71CCF18A70D5600DC6258 /* GameOverScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameOverScene.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +140,8 @@
 				53F71CA218A49DA100DC6258 /* ViewController.m */,
 				53F71CA418A49DA100DC6258 /* MyScene.h */,
 				53F71CA518A49DA100DC6258 /* MyScene.m */,
+				53F71CCE18A70D5600DC6258 /* GameOverScene.h */,
+				53F71CCF18A70D5600DC6258 /* GameOverScene.m */,
 				53F71CA718A49DA100DC6258 /* Spaceship.png */,
 				53F71CA918A49DA100DC6258 /* Images.xcassets */,
 				53F71C9318A49DA100DC6258 /* Supporting Files */,
@@ -290,6 +295,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53F71CD018A70D5600DC6258 /* GameOverScene.m in Sources */,
 				53F71CA618A49DA100DC6258 /* MyScene.m in Sources */,
 				53F71CA318A49DA100DC6258 /* ViewController.m in Sources */,
 				53F71C9D18A49DA100DC6258 /* AppDelegate.m in Sources */,

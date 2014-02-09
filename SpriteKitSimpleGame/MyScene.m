@@ -7,12 +7,14 @@
 //
 
 #import "MyScene.h"
+#import "GameOverScene.h"
 
 @interface MyScene ()
 
 @property (nonatomic) SKSpriteNode * player;
 @property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
+@property (nonatomic) int monstersDestroyed;
 
 @end
 
@@ -89,12 +91,13 @@ static const uint32_t monsterCategory        =  0x1 << 1;
     
     SKAction *actionMove = [SKAction moveTo:CGPointMake(-monster.size.width/2, actualY) duration:actualDuration];
     SKAction *actionMoveDone = [SKAction removeFromParent];
-    
-    [monster runAction:actionMove completion:^(){
-        [monster runAction:actionMoveDone];
+
+    SKAction * loseAction = [SKAction runBlock:^{
+        SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
+        SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:NO];
+        [self.view presentScene:gameOverScene transition: reveal];
     }];
-    
-    //[monster runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
+    [monster runAction:[SKAction sequence:@[actionMove, loseAction, actionMoveDone]]];
 }
 -(void)update:(NSTimeInterval)currentTime
 {
@@ -118,6 +121,7 @@ static const uint32_t monsterCategory        =  0x1 << 1;
 }
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [self runAction:[SKAction playSoundFileNamed:@"pew-pew-lei.caf" waitForCompletion:NO]];
     UITouch *touch = [touches anyObject];
     CGPoint location = [touch locationInNode:self];
     SKSpriteNode *projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
@@ -150,6 +154,29 @@ static const uint32_t monsterCategory        =  0x1 << 1;
         SKAction *actionMoveDone = [SKAction removeFromParent];
         
         [projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
+    }
+}
+- (void)projectile:(SKSpriteNode *)projectile didCollideWithMonster:(SKSpriteNode *)monster
+{
+    NSLog(@"Hit");
+    [projectile removeFromParent];
+    [monster removeFromParent];
+    self.monstersDestroyed++;
+    if (self.monstersDestroyed > 30) {
+        SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
+        SKScene * gameOverScene = [[GameOverScene alloc] initWithSize:self.size won:YES];
+        [self.view presentScene:gameOverScene transition: reveal];
+    }
+}
+-(void)didBeginContact:(SKPhysicsContact *)contact
+{
+    //not convinced all of this is needed
+    SKPhysicsBody *firstBody = (contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask)? contact.bodyA : contact.bodyB;
+    SKPhysicsBody *secondBody = (contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask)? contact.bodyB : contact.bodyA;
+
+    if ((firstBody.categoryBitMask & projectileCategory) != 0 && (secondBody.categoryBitMask & monsterCategory) !=0)
+    {
+        [self projectile:(SKSpriteNode *)firstBody.node didCollideWithMonster:(SKSpriteNode *)secondBody.node];
     }
 }
 @end
